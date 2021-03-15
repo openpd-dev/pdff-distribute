@@ -1,0 +1,43 @@
+{
+    "NTER": {
+        "ParentAtom": "N",
+        "LabelAtom": "CA",
+        "DeleteAtoms": ["H"],
+        "PatchAtoms": ["HT1", "HT2", "HT3"],
+        "PatchLines": [
+            "ATOM  %5d  HT1%4s %1s%4d    %8.2f%8.2f%8.2f  1.00  0.00           H  \n",
+            "ATOM  %5d  HT2%4s %1s%4d    %8.2f%8.2f%8.2f  1.00  0.00           H  \n",
+            "ATOM  %5d  HT3%4s %1s%4d    %8.2f%8.2f%8.2f  1.00  0.00           H  \n"
+        ]
+    },
+    "CTER": {
+        "ParentAtom": "C",
+        "LabelAtom": "O",
+        "DeleteAtoms": ["O"],
+        "PatchAtoms": ["OX1", "OX2"],
+        "PatchLines": [
+            "ATOM  %5d  OX1%4s %1s%4d    %8.2f%8.2f%8.2f  1.00  0.00           O  \n",
+            "ATOM  %5d  OX2%4s %1s%4d    %8.2f%8.2f%8.2f  1.00  0.00           O  \n"
+        ]
+    },
+    "NH3": {
+        "ParentAtom": "N",
+        "LabelAtom": "CA",
+        "DeleteAtoms": ["H"],
+        "PatchAtoms": ["H1", "H2", "H3"],
+        "PatchLines": [
+            "ATOM  %5d  H1 %4s %1s%4d    %8.2f%8.2f%8.2f  1.00  0.00           H  \n",
+            "ATOM  %5d  H2 %4s %1s%4d    %8.2f%8.2f%8.2f  1.00  0.00           H  \n",
+            "ATOM  %5d  H3 %4s %1s%4d    %8.2f%8.2f%8.2f  1.00  0.00           H  \n"
+        ]
+    },
+    "COOH": {
+        "ParentAtom": "C",
+        "LabelAtom": "O",
+        "DeleteAtoms": [],
+        "PatchAtoms": ["OXT"],
+        "PatchLines": [
+            "ATOM  %5d  OXT%4s %1s%4d    %8.2f%8.2f%8.2f  1.00  0.00           O  \n"
+        ]
+    }
+}
