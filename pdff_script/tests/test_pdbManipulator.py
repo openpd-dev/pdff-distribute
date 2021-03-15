@@ -1,4 +1,5 @@
 import pytest, os
+import numpy as np
 from .. import PDBManipulator
 
 cur_dir = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
@@ -12,7 +13,8 @@ class TestPDBManipulator:
 
     def test_attributes(self):
         assert self.manipulator.patches['NTER']['ParentAtom'] == 'N'
-        assert self.manipulator.atom_id[0] == 136
+        assert self.manipulator.atom_id[0] == 0
+        assert self.manipulator.res_id[0] == 0
 
     def test_exceptions(self):
         with pytest.raises(KeyError):
@@ -41,14 +43,25 @@ class TestPDBManipulator:
         for i, j in zip(sorted_id, self.manipulator.res_id):
             assert i == j[0]
 
+    def test_writeNewFile(self):
+        self.manipulator.writeNewFile(os.path.join(cur_dir, 'output/sorted.pdb'))
+
     def test_addPatch(self):
-        self.manipulator.sortResId()
-        self.manipulator.sortAtomId()
         self.manipulator.addPatch(0, 'NH3')
         self.manipulator.addPatch(1, 'COOH')
         self.manipulator.writeNewFile(os.path.join(cur_dir, 'output/patched.pdb'))
 
-    def test_writeNewFile(self):
-        self.manipulator.sortResId()
-        self.manipulator.sortAtomId()
-        self.manipulator.writeNewFile(os.path.join(cur_dir, 'output/sorted.pdb'))
+    def test_moveBy(self):
+        origin_coord = np.array(self.manipulator.coord[1, :])
+        self.manipulator.moveBy([5, 5, 5])
+        cur_coord = self.manipulator.coord[1, :]
+        self.manipulator.writeNewFile(os.path.join(cur_dir, 'output/moved.pdb'))
+        for i, j in zip(origin_coord, cur_coord):
+            assert i + 5 == j
+
+    def test_getCenterOfMass(self):
+        origin_com = np.array(self.manipulator.getCenterOfMass())
+        self.manipulator.moveBy([5, 5, 5])
+        cur_com = np.array(self.manipulator.getCenterOfMass())
+        for i, j in zip(origin_com, cur_com):
+            assert i + 5 == pytest.approx(j)
