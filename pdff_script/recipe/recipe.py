@@ -9,8 +9,8 @@ class Recipe:
         self.forcefield_file = forcefield_file
         self.cuda_id = cuda_id
 
-    def _createDirsFromFileTree(self, parent_dir, file_tree):
-        for key, value in list(file_tree.items()):
+    def _createDirsFromFileTree(self, parent_dir, dir_tree):
+        for key, value in list(dir_tree.items()):
             os.mkdir(os.path.join(parent_dir, key))
             if isinstance(value, dict) and value != {}:
                 self._createDirsFromFileTree(os.path.join(parent_dir, key), value)
@@ -22,10 +22,10 @@ class Recipe:
         if os.path.exists(self.save_dir):
             shutil.rmtree(self.save_dir)
         os.mkdir(self.save_dir)
-        self._createDirsFromFileTree(self.save_dir, self.file_tree)
+        self._createDirsFromFileTree(self.save_dir, self.dir_tree)
 
-    def createSimulationFiles(self):
-        for script in self.simulation_recipe:
+    def createScriptFiles(self):
+        for script in self.script_recipe:
             script.writeFile()
 
     def createStrFiles(self):
@@ -34,4 +34,4 @@ class Recipe:
     def runRecipe(self):
         self.createDirs()
         self.createStrFiles()
-        self.createSimulationFiles()
+        self.createScriptFiles()

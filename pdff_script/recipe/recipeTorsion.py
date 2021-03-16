@@ -10,11 +10,13 @@ template_dir = os.path.join(cur_dir, '../template')
 class RecipeTorsion(Recipe):
     def __init__(
         self, save_dir: str, model_name: str, forcefield_file: str, cuda_id: int,
-        peptide1: str, peptide2: str, solution: str='nacl_0.15mol.pdb'
+        peptide1: str, peptide2: str, solution: str='nacl_0.15mol.pdb', parent_id=0
     ) -> None:
         super().__init__(save_dir, model_name, forcefield_file, cuda_id)
+        self.parent_id = parent_id
+        
         # Dir structure
-        self.file_tree = {
+        self.dir_tree = {
             'simulation': {},
             'str': {},
             'output': {
@@ -32,7 +34,7 @@ class RecipeTorsion(Recipe):
         self.solution = PDBManipulator(os.path.join(template_dir, 'solution', solution), end_label='ENDMDL')
 
         # Simulation recipe
-        self.simulation_recipe = [
+        self.script_recipe = [
             ScriptMinimize(
                 save_dir=os.path.join(self.save_dir, 'simulation'), 
                 forcefield_file=self.forcefield_file,
@@ -58,6 +60,10 @@ class RecipeTorsion(Recipe):
                 pdb_file=os.path.join(self.save_dir, 'str/str.pdb'),
                 forcefield_file=self.forcefield_file,
                 model_name=self.model_name, cuda_id=self.cuda_id
+            ),
+            ScriptShell(
+                save_dir=os.path.join(self.save_dir), 
+                model_name=self.model_name, parent_id=self.parent_id
             )
         ]
         
