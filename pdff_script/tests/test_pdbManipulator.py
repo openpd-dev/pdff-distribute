@@ -3,6 +3,7 @@ import numpy as np
 from .. import PDBManipulator
 
 cur_dir = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+template_dir = os.path.join(cur_dir, '../template')
 
 class TestPDBManipulator:
     def setup(self):
@@ -75,3 +76,23 @@ class TestPDBManipulator:
         self.manipulator.setResIdByResId(0, 30)
         assert self.manipulator.res_id[0] == 30
         assert self.manipulator.line_ATOM[0].startswith('ATOM      0  N   LYS A  30')
+
+    def test_setAtomIdByAtomId(self):
+        self.manipulator.setAtomIdByAtomId(0, 10)
+        assert self.manipulator.atom_id[0] == 10
+        assert self.manipulator.line_ATOM[0].startswith('ATOM     10')
+
+    def test_catManipulator(self):
+        manipulator = PDBManipulator(os.path.join(cur_dir, 'data/testPDBManipulator.pdb'), 'END')
+        self.manipulator._catManipulator(manipulator)
+        self.manipulator.writeNewFile(os.path.join(cur_dir, 'output/cat1.pdb'))
+
+    def test_catManipulators(self):
+        asn = PDBManipulator(os.path.join(template_dir, 'peptide/ASN.pdb'), end_label='ENDMDL')
+        leu = PDBManipulator(os.path.join(template_dir, 'peptide/LEU.pdb'), end_label='ENDMDL')
+        solution = PDBManipulator(os.path.join(template_dir, 'solution/nacl_0.15mol.pdb'), end_label='ENDMDL')
+
+        leu.setResIdByResId(0, 1)
+        leu.moveBy([4, 4, 4])
+        asn.catManipulators(leu, solution)
+        asn.writeNewFile(os.path.join(cur_dir, 'output/cat2.pdb'))

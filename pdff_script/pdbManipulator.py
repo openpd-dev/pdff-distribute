@@ -304,35 +304,49 @@ class PDBManipulator(object):
             self.line_ATOM[index] = self._replaceATOMLineChainName(self.line_ATOM[index], target_chain_name)
 
     def setResIdByResId(self, res_id, target_res_id):
-        if target_res_id - res_id == 1 or res_id - target_res_id == 1:
+        if target_res_id - res_id == 1 and target_res_id <= self.num_res:
+            raise Warning('The distance between res_id and target_res_id is 1, which blur the distinction between neighbor residues')
+        elif res_id - target_res_id == 1:
             raise Warning('The distance between res_id and target_res_id is 1, which blur the distinction between neighbor residues')
         indexes = [index for index, value in enumerate(self.res_id) if value == res_id]
         for index in indexes:
             self.res_id[index] = target_res_id
             self.line_ATOM[index] = self._replaceATOMLineResId(self.line_ATOM[index], target_res_id)
 
-    def catManipulator(self, manipulator):
+    def setAtomIdByAtomId(self, atom_id, target_atom_id):
+        if target_atom_id - atom_id == 1 and target_atom_id <= self.num_atoms:
+            raise Warning('The distance between atom_id and target_atom_id is 1, which blur the distinction between neighbor atoms')
+        elif atom_id - target_atom_id == 1:
+            raise Warning('The distance between atom_id and target_atom_id is 1, which blur the distinction between neighbor atoms')
+        judge = lambda x: x==atom_id
+        index = [i for i in self.atom_id if judge(i)][0]
+        self.atom_id[index] = target_atom_id
+        self.line_ATOM[index] = self._replaceATOMLineAtomId(self.line_ATOM[index], target_atom_id)
+
+    def _catManipulator(self, manipulator):
         # Combine data
-        # self.num_atoms = len(self.raw_data)
-        # self.atom_id = np.ones([self.num_atoms, 1], int)
-        # self.res_id = np.ones([self.num_atoms, 1], int)
-        # self.mass = np.ones([self.num_atoms)
-        # self.coord = np.ones([self.num_atoms, 3])
-        # self.atom_name = []
-        # self.res_name = []
-        # self.chain_name = []
-        # self.atom_id[i] = int(data[0])
-        # self.atom_name.append(data[1])
-        # self.res_name.append(data[2])
-        # self.chain_name.append(data[3])
-        # self.res_id[i] = int(data[4])
-        # self.coord[i, :] = data[5:8]
-        # self.mass[i] = self._getMass(data[1])
-        # self.raw_data[i].append(self.mass[i][0])
-        self.atom_id = np.hstack(self.atom_id, manipulator.atom_id + self.atom_id[-1])
+        self.atom_id = np.hstack((self.atom_id, manipulator.atom_id))
         self.atom_name.extend(manipulator.atom_name)
         self.res_name.extend(manipulator.res_name)
-        # Fix Atom Line
+        self.chain_name.extend(manipulator.chain_name)
+        self.res_id = np.hstack((self.res_id, manipulator.res_id))
+        self.coord = np.vstack((self.coord, manipulator.coord))
+        self.mass = np.hstack((self.mass, manipulator.mass))
+        self.raw_data.extend(manipulator.raw_data)
+        self.line_ATOM.extend(manipulator.line_ATOM)
+
+        # Update Info
+        self.num_atoms += manipulator.num_atoms
+        self.num_res += manipulator.num_res
+        self.sortAtomId()
+        self.sortResId()
+
+        if self.line_NoATOM == []:
+            self.line_NoATOM.extend(manipulator.line_NoATOM)
+
+    def catManipulators(self, *manipulators):
+        for manipulator in manipulators:
+            self._catManipulator(manipulator)
 
     def writeNewFile(self, file_name):
         with open(file_name, 'w') as io:
