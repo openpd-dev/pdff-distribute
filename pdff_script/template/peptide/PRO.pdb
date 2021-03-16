@@ -1,0 +1,15 @@
+ATOM      0  N   PRO A   0       -1.29    0.11   -0.47  1.00  0.00           N  
+ATOM      1  CA  PRO A   0        0.17    0.23   -0.46  1.00  0.00           C  
+ATOM      2  C   PRO A   0        0.90   -0.96   -1.10  1.00  0.00           C  
+ATOM      3  O   PRO A   0        1.98   -0.80   -1.66  1.00  0.00           O  
+ATOM      4  CB  PRO A   0        0.58    0.38    1.02  1.00  0.00           C  
+ATOM      5  CG  PRO A   0       -0.70    0.81    1.72  1.00  0.00           C  
+ATOM      6  CD  PRO A   0       -1.80    0.15    0.90  1.00  0.00           C  
+ATOM      7  HA  PRO A   0        0.45    1.14   -1.00  1.00  0.00           H  
+ATOM      8  HB2 PRO A   0        0.93   -0.56    1.41  1.00  0.00           H  
+ATOM      9  HB3 PRO A   0        1.37    1.12    1.14  1.00  0.00           H  
+ATOM     10  HG2 PRO A   0       -0.72    0.46    2.74  1.00  0.00           H  
+ATOM     11  HG3 PRO A   0       -0.80    1.90    1.67  1.00  0.00           H  
+ATOM     12  HD2 PRO A   0       -1.99   -0.84    1.25  1.00  0.00           H  
+ATOM     13  HD3 PRO A   0       -2.72    0.72    0.98  1.00  0.00           H 
+ENDMDL
