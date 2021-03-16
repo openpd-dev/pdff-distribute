@@ -9,6 +9,7 @@ origin_data/*
 # Ignore output file of test
 pdff_script/tests/output/*.py
 pdff_script/tests/output/*.pdb
+pdff_script/tests/output/*.sh
 pdff_script/tests/output/*/*
 
 # Vscode
