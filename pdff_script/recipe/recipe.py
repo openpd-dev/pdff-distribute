@@ -1,12 +1,14 @@
 import os, shutil
 
+cur_dir = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+forcefield_dir = os.path.join(cur_dir, '../forcefield')
 class Recipe:
     def __init__(
         self, save_dir: str, model_name: str, forcefield_file: str, cuda_id: int,
     ) -> None:
         self.save_dir = save_dir
         self.model_name = model_name
-        self.forcefield_file = forcefield_file
+        self.forcefield_file = forcefield_file if 'forcefield/' in forcefield_file else os.path.join(forcefield_dir, forcefield_file)
         self.cuda_id = cuda_id
 
     def _createDirsFromFileTree(self, parent_dir, dir_tree):

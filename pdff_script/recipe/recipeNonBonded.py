@@ -9,8 +9,8 @@ template_dir = os.path.join(cur_dir, '../template')
 
 class RecipeNonBonded(Recipe):
     def __init__(
-        self, save_dir: str, model_name: str, forcefield_file: str, cuda_id: int,
-        peptide1: str, peptide2: str, solution: str='nacl_0.15mol.pdb', parent_id=0
+        self, save_dir: str, model_name: str, cuda_id: int, peptide1: str, peptide2: str, 
+        solution: str='nacl_0.15mol', parent_id=0, forcefield_file: str='amber14/nonbonded.xml'
     ) -> None:
         super().__init__(save_dir, model_name, forcefield_file, cuda_id)
         self.parent_id = parent_id
@@ -30,7 +30,7 @@ class RecipeNonBonded(Recipe):
         _ = isStandardPeptide(peptide1, peptide2)
         self.peptide1 = PDBManipulator(os.path.join(template_dir, 'peptide', peptide1 + '.pdb'), end_label='ENDMDL')
         self.peptide2 = PDBManipulator(os.path.join(template_dir, 'peptide', peptide2 + '.pdb'), end_label='ENDMDL')
-        self.solution = PDBManipulator(os.path.join(template_dir, 'solution', solution), end_label='ENDMDL')
+        self.solution = PDBManipulator(os.path.join(template_dir, 'solution', solution + '.pdb'), end_label='ENDMDL')
 
         # Simulation recipe
         self.script_recipe = [
