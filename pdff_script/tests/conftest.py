@@ -7,6 +7,8 @@ test_order = [
      'scriptEqNVT',
      'scriptEqNPT',
      'scriptSamplingTorsion',
+     'scriptSamplingNonBonded',
+     'scriptShell',
      'recipeTorsion'
 ]
 
