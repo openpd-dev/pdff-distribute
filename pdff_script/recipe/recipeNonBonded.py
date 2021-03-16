@@ -1,0 +1,89 @@
+import os
+import numpy as np
+from . import Recipe
+from ..script import *
+from .. import BACK_BONE_ATOMS, PDBManipulator, isStandardPeptide
+
+cur_dir = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+template_dir = os.path.join(cur_dir, '../template')
+
+class RecipeNonBonded(Recipe):
+    def __init__(
+        self, save_dir: str, model_name: str, forcefield_file: str, cuda_id: int,
+        peptide1: str, peptide2: str, solution: str='nacl_0.15mol.pdb'
+    ) -> None:
+        super().__init__(save_dir, model_name, forcefield_file, cuda_id)
+        # Dir structure
+        self.file_tree = {
+            'simulation': {},
+            'str': {},
+            'output': {
+                'log_files',
+                'pdb_files',
+                'cv_files'
+            },
+            'ansys': {},
+        }
+
+        # Structure
+        _ = isStandardPeptide(peptide1, peptide2)
+        self.peptide1 = PDBManipulator(os.path.join(template_dir, 'peptide', peptide1 + '.pdb'), end_label='ENDMDL')
+        self.peptide2 = PDBManipulator(os.path.join(template_dir, 'peptide', peptide2 + '.pdb'), end_label='ENDMDL')
+        self.solution = PDBManipulator(os.path.join(template_dir, 'solution', solution), end_label='ENDMDL')
+
+        # Simulation recipe
+        self.simulation_recipe = [
+            ScriptMinimize(
+                save_dir=os.path.join(self.save_dir, 'simulation'), 
+                forcefield_file=self.forcefield_file,
+                model_name=self.model_name, cuda_id=self.cuda_id
+            ),
+            ScriptHeatingNVT(
+                save_dir=os.path.join(self.save_dir, 'simulation'), 
+                forcefield_file=self.forcefield_file,
+                model_name=self.model_name, cuda_id=self.cuda_id
+            ),
+            ScriptEqNPT(
+                save_dir=os.path.join(self.save_dir, 'simulation'), 
+                forcefield_file=self.forcefield_file,
+                model_name=self.model_name, cuda_id=self.cuda_id
+            ),
+            ScriptEqNVT(
+                save_dir=os.path.join(self.save_dir, 'simulation'), 
+                forcefield_file=self.forcefield_file,
+                model_name=self.model_name, cuda_id=self.cuda_id
+            ),
+            ScriptSamplingNonBonded(
+                save_dir=os.path.join(self.save_dir, 'simulation'), 
+                pdb_file=os.path.join(self.save_dir, 'str/str.pdb'),
+                forcefield_file=self.forcefield_file,
+                model_name=self.model_name, cuda_id=self.cuda_id
+            )
+        ]
+        
+    def createStrFiles(self):
+        index_peptide1_sc = [i for i in range(self.peptide1.num_atoms) if not self.peptide1.atom_name[i] in BACK_BONE_ATOMS]
+        coord_peptide1_com = np.zeros(3)
+        mass_sc = 0
+        for index in index_peptide1_sc:
+            mass_sc += self.peptide1.mass[index]
+            coord_peptide1_com += self.peptide1.mass[index] * self.peptide1.coord[index]
+        coord_peptide1_com /= mass_sc
+
+        index_peptide2_sc = [i for i in range(self.peptide2.num_atoms) if not self.peptide2.atom_name[i] in BACK_BONE_ATOMS]
+        coord_peptide2_com = np.zeros(3)
+        mass_sc = 0
+        for index in index_peptide2_sc:
+            mass_sc += self.peptide2.mass[index]
+            coord_peptide2_com += self.peptide2.mass[index] * self.peptide2.coord[index]
+        coord_peptide2_com /= mass_sc
+        self.peptide2.setResIdByResId(0, 1)
+        self.peptide2.setChainNameByResId(1, 'B')
+
+        move_vec = coord_peptide1_com - coord_peptide2_com + np.array([5, 5, 5])
+        self.peptide2.moveBy(move_vec)
+        self.structure = self.peptide1
+        self.structure.catManipulators(self.peptide2, self.solution)
+        self.structure.writeNewFile(os.path.join(self.save_dir, 'str/str.pdb'))
+
+    
