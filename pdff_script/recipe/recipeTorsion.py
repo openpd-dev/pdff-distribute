@@ -23,8 +23,7 @@ class RecipeTorsion(Recipe):
                 'log_files': {},
                 'pdb_files': {},
                 'meta_files': {'back'}
-            },
-            'ansys': {},
+            }
         }
 
         # Structure

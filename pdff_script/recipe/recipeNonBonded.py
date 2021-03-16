@@ -23,8 +23,7 @@ class RecipeNonBonded(Recipe):
                 'log_files',
                 'pdb_files',
                 'cv_files'
-            },
-            'ansys': {},
+            }
         }
 
         # Structure
