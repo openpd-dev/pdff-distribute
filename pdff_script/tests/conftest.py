@@ -1,7 +1,13 @@
 import pytest
 
 test_order = [
-     'pdbManipulator'
+     'pdbManipulator',
+     'scriptMinimize',
+     'scriptHeatingNVT',
+     'scriptEqNVT',
+     'scriptEqNPT',
+     'scriptSamplingTorsion',
+     'recipeTorsion'
 ]
 
 def pytest_collection_modifyitems(items):
