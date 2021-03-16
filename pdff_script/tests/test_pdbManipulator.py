@@ -29,19 +29,19 @@ class TestPDBManipulator:
             assert atom_id == i
 
     def test_sortResId(self):
-        cur_res = self.manipulator.res_id[0][0]
+        cur_res = self.manipulator.res_id[0]
         cur_order = 0
         sorted_id = []
         for res_id in self.manipulator.res_id:
-            if res_id[0] == cur_res:
+            if res_id == cur_res:
                 sorted_id.append(cur_order)
             else:
-                cur_res = res_id[0]
+                cur_res = res_id
                 cur_order += 1
                 sorted_id.append(cur_order)
         self.manipulator.sortResId()
         for i, j in zip(sorted_id, self.manipulator.res_id):
-            assert i == j[0]
+            assert i == j
 
     def test_writeNewFile(self):
         self.manipulator.writeNewFile(os.path.join(cur_dir, 'output/sorted.pdb'))
@@ -65,3 +65,13 @@ class TestPDBManipulator:
         cur_com = np.array(self.manipulator.getCenterOfMass())
         for i, j in zip(origin_com, cur_com):
             assert i + 5 == pytest.approx(j)
+
+    def test_setChainNameByResId(self):
+        self.manipulator.setChainNameByResId(0, 'B')
+        assert self.manipulator.chain_name[0] == 'B'
+        assert self.manipulator.line_ATOM[0].startswith('ATOM      0  N   LYS B')
+
+    def test_setResIdByResId(self):
+        self.manipulator.setResIdByResId(0, 30)
+        assert self.manipulator.res_id[0] == 30
+        assert self.manipulator.line_ATOM[0].startswith('ATOM      0  N   LYS A  30')
