@@ -2,7 +2,7 @@ import pytest, os
 from .. import ScriptSamplingNonBonded
 
 cur_dir = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
-forcefield_dir = os.path.join(cur_dir, '../forcefield/amberff14sb')
+forcefield_dir = os.path.join(cur_dir, '../forcefield/amber14')
 
 class TestScriptSamplingTorsion:
     def setup(self):
