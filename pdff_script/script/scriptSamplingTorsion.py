@@ -147,7 +147,10 @@ class ScriptSamplingTorsion(Script):
     ) -> None:
         super().__init__(save_dir, model_name, forcefield_file, cuda_id=cuda_id)
         self.file_name = file_name
-        self.pdb_file = app.PDBFile(pdb_file)
+        self.pdb_file = pdb_file
+        
+    def format_context(self):
+        self.pdb_file = app.PDBFile(self.pdb_file)
         atoms = list(self.pdb_file.topology.atoms())
         res0_atoms = [atom for atom in atoms if atom.residue.index==0]
         res0_ca = [atom.index for atom in res0_atoms if atom.name=='CA']
