@@ -59,3 +59,6 @@ def isStandardPeptide(*peptides):
 from pdff_script.pdbManipulator import PDBManipulator
 from pdff_script.script import *
 from pdff_script.recipe import *
+from pdff_script.device import Device
+from pdff_script.job import Job
+from pdff_script.manager import *
