@@ -9,7 +9,10 @@ test_order = [
      'scriptSamplingTorsion',
      'scriptSamplingNonBonded',
      'scriptShell',
-     'recipeTorsion'
+     'recipeTorsion',
+     'recipeNonBonded',
+     'Device',
+     'Job'
 ]
 
 def pytest_collection_modifyitems(items):
