@@ -1,10 +1,10 @@
-# PDFF distribute: A distributed framework for calculation of PDFF
+# PDFF distribute: A distributed framework for the calculation of PDFF
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ## Introduction
 
-This repository stores the openmm input script for the calculation of PDFF. Meanwhile, this package provide a distributed calculation framework to utilized power of multi-gpu on multi serves efficiently.
+This repository stores the openmm input script for the calculation of PDFF. Meanwhile, this package provides a distributed calculation framework to utilize the power of multi-gpu on multi serves efficiently.
 
 ## Demo
 
