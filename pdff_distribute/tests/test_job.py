@@ -1,5 +1,5 @@
 import os, pytest
-from pdff_script.recipe import recipeNonBonded
+from pdff_distribute.recipe import recipeNonBonded
 from .. import Device, Job
 from .. import RecipeNonBonded
 
