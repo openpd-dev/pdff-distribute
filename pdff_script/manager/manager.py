@@ -18,7 +18,7 @@ class Manager:
     def __init__(
         self, log_file: str, gpu_file: str, 
         target_dir, back_dir='',
-        is_init_log=False
+        is_init_log=False, target_peptide_pair=None
     ) -> None:
         if not log_file.endswith('.csv'):
             raise ValueError('The log_file should be a .csv file')
@@ -30,15 +30,19 @@ class Manager:
         if self.is_init_log:
             self.initLog()
         self.log = pd.read_csv(self.log_file)
-        self.targets = self.log[self.log['Status'] == 'Unfinished']
+        if target_peptide_pair != None:
+            self.targets = self.log[[i in target_peptide_pair for i in list(self.log.loc[:, 'Peptide Pair'])]]
+            self.targets = self.targets[self.targets['Status'] == 'Unfinished'] # Ignore finished target
+        else:
+            self.targets = self.log[self.log['Status'] == 'Unfinished']
         self.devices = []
         self.num_devices = 0
 
     def initGPULog(self):
         io = open(self.gpu_file, 'w')
-        print('GPU Label', 'Status', sep=',', file=io)
+        print('GPU Label', 'Status', 'Job', sep=',', file=io)
         for device in self.devices:
-            print(device.label, 'Unoccupied', sep=',', file=io)
+            print(device.label, 'Unoccupied', 'None', sep=',', file=io)
     
     def testDevices(self):
         if self.num_devices == 0:
@@ -76,6 +80,6 @@ class Manager:
                         args=(device, peptide_pairs[cur_pair])
                     )
                     cur_pair += 1
-                    time.sleep(2)
+                    time.sleep(5)
         pool.close()
         pool.join()
