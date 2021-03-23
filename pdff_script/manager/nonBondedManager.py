@@ -10,7 +10,7 @@ contact : zhenyuwei99@gmail.com
 copyright : (C)Copyright 2021-2021, Zhenyu Wei and Southeast University
 '''
 
-import datetime
+import datetime, os
 import pandas as pd
 from . import Manager
 from .. import TRIPLE_LETTER_ABBREVIATION
@@ -20,9 +20,10 @@ class NonBondedManager(Manager):
     def __init__(
         self, log_file: str, gpu_file: str, 
         target_dir, back_dir='',
-        is_init_log=False, model_name='PDFF Torsion Potential'
+        is_init_log=False, target_peptide_pair=None,
+        model_name='PDFF Non-Bonded Potential'
     ) -> None:
-        super().__init__(log_file, gpu_file, target_dir, back_dir=back_dir, is_init_log=is_init_log)
+        super().__init__(log_file, gpu_file, target_dir, back_dir=back_dir, is_init_log=is_init_log, target_peptide_pair=target_peptide_pair)
         self.model_name = model_name
 
     def initLog(self):
@@ -41,7 +42,10 @@ class NonBondedManager(Manager):
         df = pd.read_csv(self.gpu_file)
         index = list(df['GPU Label'] == device.label).index(True)
         df.loc[index, 'Status'] = 'Occupied'
+        df.loc[index, 'Job'] = peptide_pair
         df.to_csv(self.gpu_file, index=False)
+        os.system('clear')
+        print(df, '\n')
         
         df = pd.read_csv(self.log_file)
         index = list(df['Peptide Pair'] == peptide_pair).index(True)
@@ -57,11 +61,21 @@ class NonBondedManager(Manager):
         
         start_time = datetime.datetime.now().replace(microsecond=0)
         df = pd.read_csv(self.log_file)
+        
         index = list(df['Peptide Pair'] == peptide_pair).index(True)
         df.loc[index, 'Start'] = start_time
         df.to_csv(self.log_file, index=False)
+        print(df)
         device.submitJob(job)
         
+        df = pd.read_csv(self.gpu_file)
+        index = list(df['GPU Label'] == device.label).index(True)
+        df.loc[index, 'Status'] = 'Unoccupied'
+        df.loc[index, 'Job'] = 'None'
+        df.to_csv(self.gpu_file, index=False)
+        os.system('clear')
+        print(df, '\n')
+
         df = pd.read_csv(self.log_file)
         index = list(df['Peptide Pair'] == peptide_pair).index(True)
         end_time = datetime.datetime.now().replace(microsecond=0)
@@ -69,9 +83,6 @@ class NonBondedManager(Manager):
         df.loc[index, 'End'] = end_time
         df.loc[index, 'Elapsed'] = end_time - start_time
         df.to_csv(self.log_file, index=False)
+        print(df)
         
-        df = pd.read_csv(self.gpu_file)
-        index = list(df['GPU Label'] == device.label).index(True)
-        df.loc[index, 'Status'] = 'Unoccupied'
-        df.to_csv(self.gpu_file, index=False)
     
