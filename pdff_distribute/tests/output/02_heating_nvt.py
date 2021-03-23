@@ -1,24 +1,9 @@
-#!/usr/bin/env python
-# -*-coding:utf-8 -*-
-'''
-file: scriptHeatingNVT.py
-created time : 2021/03/16
-last edit time : 2021/03/17
-author : Zhenyu Wei 
-version : 1.0
-contact : zhenyuwei99@gmail.com
-copyright : (C)Copyright 2021-2021, Zhenyu Wei and Southeast University
-'''
 
-import datetime
-from . import Script
-
-context = """
 #########################################################
-## Model: {:<45}##
+## Model: alpha helix validation                       ##
 ## Goal: Heating system to ideal temperature           ##
 ## Author: Zhenyu Wei                                  ##
-## Date: {:<46}##
+## Date: 2021-03-19 20:47:31                           ##
 ######################################################### 
 
 ## Presetting
@@ -60,11 +45,11 @@ pdb = app.PDBFile(path_out_pdb + '/min_restart.pdb')
 # In the heating paradigm, system, integrator will be changed periodically, 
 # which is not including in `Setting Simulation` part, rather in `Run` part
 # Forcefiled
-forcefield = app.ForceField('{:<}', 'amber14/tip3pfb.xml')
+forcefield = app.ForceField('/home/zhenyuwei/nutstore/pdff-scripts/pdff_script/tests/../forcefield/amber14/nonbonded.xml', 'amber14/tip3pfb.xml')
 
 # Platform
 platform = openmm.Platform_getPlatformByName(sim_platform)
-platform.setPropertyDefaultValue('DeviceIndex', '{:<}')
+platform.setPropertyDefaultValue('DeviceIndex', '0')
 
 # Reporter
 # Log reporter
@@ -73,7 +58,7 @@ sys.stdout = file_log
 log_reporter = app.StateDataReporter(sys.stdout, out_log_interval, step=True,
         potentialEnergy=True, kineticEnergy=True, totalEnergy=True,
         temperature=True, volume=True, speed=True, density=True,
-        totalSteps=sim_steps, remainingTime=True,separator='\\t')
+        totalSteps=sim_steps, remainingTime=True,separator='\t')
 # PDB reporter
 pdb_reporter = app.PDBReporter(path_out_pdb + '/' + out_prefix + '.pdb', out_pdb_interval, enforcePeriodicBox=True)
 
@@ -82,19 +67,19 @@ sim_steps_single = sim_time_single / sim_interval
 sim_temp_diff = sim_temp_end + 1 - sim_temp_start
 num_iters = int(np.floor(sim_steps / sim_steps_single))
 
-print('Start heating system from %.2f K to %.2f K\\n' %(sim_temp_start, sim_temp_end))
+print('Start heating system from %.2f K to %.2f K\n' %(sim_temp_start, sim_temp_end))
 print('%d simulations of %d steps (%.2f ps) will be performed' %(num_iters, sim_steps_single, sim_time_single/unit.picosecond))
 
 for temp in np.arange(sim_temp_start, sim_temp_end+1, sim_temp_diff/num_iters): 
     # Commented codes are only used while heating system in NPT ensemble
-    print('\\nHeating system at %.2f K. \\n' %temp)  
+    print('\nHeating system at %.2f K. \n' %temp)  
     # System
     system = forcefield.createSystem(pdb.topology, nonbondedMethod=app.PME, nonbondedCutoff=sim_cutoff, 
                 constraints=app.HAngles, ewaldErrorTolerance=0.0005)
     #barostat = openmm.MonteCarloBarostat(sim_pres, sim_temp_start*unit.kelvin, 1000)
     #system.addForce(barostat)
     #thermostat = openmm.AndersenThermostat(temp*unit.kelvin, 0.001/unit.femtosecond)
-    #system.addForce\\(thermostat)
+    #system.addForce\(thermostat)
     
     # Integrator      
     integrator = openmm.LangevinIntegrator(temp*unit.kelvin, 0.001/unit.femtosecond, sim_interval)  
@@ -121,23 +106,8 @@ for temp in np.arange(sim_temp_start, sim_temp_end+1, sim_temp_diff/num_iters):
     pdb = app.PDBFile(path_out_pdb + '/' + out_prefix + '_restart.pdb')
 
 end_time = datetime.datetime.now()
-print('Total running time:', end='\\t')
+print('Total running time:', end='\t')
 print(end_time - start_time)
 
 file_log.close()
-"""
 
-class ScriptHeatingNVT(Script):
-    def __init__(
-        self, save_dir: str, model_name: str, forcefield_file: str, cuda_id: int,
-        file_name='02_heating_nvt.py'
-    ) -> None:
-        super().__init__(save_dir, model_name, file_name)
-        self.forcefield_file = forcefield_file
-        self.cuda_id = cuda_id
-    
-    def format_context(self):
-        self.context = context.format(
-            self.model_name, str(datetime.datetime.now().replace(microsecond=0)), 
-            self.forcefield_file, self.cuda_id
-        )

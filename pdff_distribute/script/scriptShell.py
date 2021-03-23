@@ -31,12 +31,19 @@ context = """
 # time=$(date "+%Y-%m-%d %H:%M:%S")
 # echo "$time: Start Simulation"
 
+# mkdir output/cv_files/test
+# touch output/cv_files/test.txt
+# touch output/cv_files/test/test.txt
+mkdir output/meta_files/test
+touch output/meta_files/test.txt
+touch output/meta_files/test/test.txt
+
 cd simulation 
-python 01_min.py
-python 02_heating_nvt.py
-python 03_eq_npt.py
-python 04_eq_nvt.py
-python 05_sampling.py
+$python 01_min.py
+#$python 02_heating_nvt.py
+#$python 03_eq_npt.py
+#$python 04_eq_nvt.py
+#$python 05_sampling.py
 
 # time=$(date "+%Y-%m-%d %H:%M:%S")
 # echo "$time: End Simulation"
