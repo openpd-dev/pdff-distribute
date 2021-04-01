@@ -10,10 +10,10 @@ developing/*
 origin_data/*
 
 # Ignore output file of test
-pdff_distribute/tests/output/*.py
-pdff_distribute/tests/output/*.pdb
-pdff_distribute/tests/output/*.sh
-pdff_distribute/tests/output/*/*
+distribute/tests/output/*.py
+distribute/tests/output/*.pdb
+distribute/tests/output/*.sh
+distribute/tests/output/*/*
 
 # Vscode
 .vscode/*
